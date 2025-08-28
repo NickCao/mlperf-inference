@@ -23,12 +23,12 @@
 
 echo "Time Start: $(date +%s)"
 export WORKSPACE_DIR="/workspace"
-export DATA_DIR="/data"
+export DATA_DIR="/workspace/whisper/dataset"
 export MANIFEST_FILE="${DATA_DIR}/dev-all-repack.json"
 export RUN_LOGS=${WORKSPACE_DIR}/run_output
 export SCENARIO="Offline"
 
-export NUM_CORES=$(($(lscpu | grep "Socket(s):" | awk '{print $2}') * $(lscpu | grep "Core(s) per socket:" | awk '{print $4}')))
+export NUM_CORES=$(nproc)
 export NUM_NUMA_NODES=$(lscpu | grep "NUMA node(s)" | awk '{print $NF}')
 export CORES_PER_INST=$((${NUM_CORES} / ${NUM_NUMA_NODES}))
 export OMP_NUM_THREADS=${CORES_PER_INST}

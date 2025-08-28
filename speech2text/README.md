@@ -12,12 +12,12 @@ You can also do pip install mlc-scripts and then use `mlcr` commands for downloa
 
 Build the docker image
 ```bash
-docker build -t whisper:latest .
+podman build -t whisper:latest .
 ```
 
 Run docker image in interactive mode
 ```bash
-docker run -it -t whisper
+podman run -it --device nvidia.com/gpu=all whisper
 ```
 
 ### Local Environment Preparation

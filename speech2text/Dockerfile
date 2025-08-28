@@ -17,14 +17,19 @@ FROM quay.io/redhat-user-workloads/octo-edge-tenant/jetson-wheels-vllm-app:lates
 
 USER root
 
-RUN uv pip install openai-whisper
+RUN dnf install -y git-core wget
+RUN uv pip install openai-whisper librosa qsl
 
 WORKDIR /workspace
 COPY ./ /workspace/
 
 # mlperf loadgen
-RUN dnf install -y git-core
 RUN mkdir -p /workspace/third_party && cd /workspace/third_party && \
     git clone https://github.com/mlcommons/inference.git mlperf-inference && cd mlperf-inference && git checkout 2814499 && cd loadgen && \
     uv pip install . && \
     cp /workspace/third_party/mlperf-inference/mlperf.conf /workspace/
+
+# bash <(curl -s https://raw.githubusercontent.com/mlcommons/r2-downloader/refs/heads/main/mlc-r2-downloader.sh) -d whisper/model https://inference.mlcommons-storage.org/metadata/whisper-model.uri
+# bash <(curl -s https://raw.githubusercontent.com/mlcommons/r2-downloader/refs/heads/main/mlc-r2-downloader.sh) -d whisper/dataset https://inference.mlcommons-storage.org/metadata/whisper-dataset.uri
+# ./reference_mlperf_perf.sh
+# ./reference_mlperf_accuracy.sh

@@ -34,7 +34,7 @@ import torch.multiprocessing as mp
 from vllm import LLM, SamplingParams
 
 # Optimization packages
-from numa import schedule, memory
+# from numa import schedule, memory
 
 # Local python packages
 from QSL import AudioQSL, AudioQSLInMemory
@@ -140,8 +140,8 @@ class Instance(mp.Process):
 
     def run(self):
         node_list = tuple([math.floor(node) for node in self.node_list])
-        memory.set_membind_nodes(*node_list)
-        schedule.run_on_cpus(os.getpid(), *self.core_list)
+        # memory.set_membind_nodes(*node_list)
+        # schedule.run_on_cpus(os.getpid(), *self.core_list)
         print(f"Binding rank {self.rank} to nodes {node_list}")
         print(f"Binding rank {self.rank} to cores {self.core_list}")
 
