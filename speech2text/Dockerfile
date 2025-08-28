@@ -19,6 +19,7 @@ USER root
 
 # RUN subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
 RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+RUN dnf install -y https://mirror.stream.centos.org/9-stream/CRB/aarch64/os/Packages/libmad-0.15.1b-33.el9.aarch64.rpm
 RUN dnf install -y git-core wget sox
 RUN uv pip install openai-whisper librosa qsl \
   "git+https://github.com/mlcommons/inference.git@2814499#subdirectory=loadgen"
