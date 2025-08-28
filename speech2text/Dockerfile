@@ -17,16 +17,18 @@ FROM quay.io/redhat-user-workloads/octo-edge-tenant/jetson-wheels-vllm-app:lates
 
 USER root
 
-RUN dnf install -y git-core wget
+RUN subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
+RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+RUN dnf install -y git-core wget sox
 RUN uv pip install openai-whisper librosa qsl \
   "git+https://github.com/mlcommons/inference.git@2814499#subdirectory=loadgen"
 
 WORKDIR /workspace
 COPY ./ /workspace/
 
-RUN bash ./download_dataset.sh
-
-# bash <(curl -s https://raw.githubusercontent.com/mlcommons/r2-downloader/refs/heads/main/mlc-r2-downloader.sh) -d whisper/model https://inference.mlcommons-storage.org/metadata/whisper-model.uri
+RUN uv pip install pandas sox
+RUN bash -c "source /app/bin/activate && bash ./download_dataset.sh"
+RUN bash <(curl -s https://raw.githubusercontent.com/mlcommons/r2-downloader/refs/heads/main/mlc-r2-downloader.sh) -d whisper/model https://inference.mlcommons-storage.org/metadata/whisper-model.uri
 # bash <(curl -s https://raw.githubusercontent.com/mlcommons/r2-downloader/refs/heads/main/mlc-r2-downloader.sh) -d whisper/dataset https://inference.mlcommons-storage.org/metadata/whisper-dataset.uri
 # ./reference_mlperf_perf.sh
 # ./reference_mlperf_accuracy.sh
