@@ -17,7 +17,7 @@ FROM quay.io/redhat-user-workloads/octo-edge-tenant/jetson-wheels-vllm-app:lates
 
 USER root
 
-RUN subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
+# RUN subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
 RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
 RUN dnf install -y git-core wget sox
 RUN uv pip install openai-whisper librosa qsl \
