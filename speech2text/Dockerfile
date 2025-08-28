@@ -13,63 +13,18 @@
 # limitations under the License.
 # ============================================================================
 
-ARG BASE_IMAGE=ubuntu
-ARG BASE_TAG=24.04
-FROM ${BASE_IMAGE}:${BASE_TAG} as dev-base
+FROM quay.io/redhat-user-workloads/octo-edge-tenant/jetson-wheels-vllm-app:latest
 
 USER root
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-                    cmake \
-                    libblas-dev \
-                    liblapack-dev \
-                    autoconf \
-                    unzip \
-                    wget \
-                    git \
-                    vim \
-                    ca-certificates \
-                    pkg-config \
-                    build-essential \
-                    numactl \
-                    libnuma-dev \
-                    libtcmalloc-minimal4 \
-                    sudo \
-                    ffmpeg \
-                    sox \
-                    python3.12 \
-                    python3-pip \
-                    python3.12-dev \
-                    python-is-python3 \
-                    gcc-12 g++-12 && \
-                    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 10 --slave /usr/bin/g++ g++ /usr/bin/g++-12
-
-# pip packages
-ARG PYTHON_VERSION=3.12
-RUN pip install --break-system-packages torch==2.7.0 torchaudio==2.7.0 torchvision --index-url https://download.pytorch.org/whl/cpu && \
-    pip install --break-system-packages pandas==2.2.2 toml==0.10.2 unidecode==1.3.8 inflect==7.3.1 librosa==0.10.2 py-libnuma==1.2 numpy==2.0.1 && \
-    pip install --break-system-packages sox==1.5.0 && \
-    pip install --break-system-packages setuptools-scm && \
-    pip install --break-system-packages transformers==4.52.4 && \
-    pip install --break-system-packages -U openai-whisper
+RUN uv pip install openai-whisper
 
 WORKDIR /workspace
 COPY ./ /workspace/
 
-# vllm
-RUN mkdir -p /workspace/third_party && cd /workspace/third_party && \
-    git clone https://github.com/vllm-project/vllm vllm-cpu && \
-    cd vllm-cpu && \
-    git checkout b124e1085b1bf977e3dac96d99ffd9d8ddfdb6cc && \
-    git log -n1 && \
-    pip3 install --break-system-packages -r requirements/cpu.txt && \
-    VLLM_TARGET_DEVICE=cpu pip install --break-system-packages . --no-build-isolation
-
 # mlperf loadgen
+RUN dnf install -y git-core
 RUN mkdir -p /workspace/third_party && cd /workspace/third_party && \
     git clone https://github.com/mlcommons/inference.git mlperf-inference && cd mlperf-inference && git checkout 2814499 && cd loadgen && \
-    pip install --break-system-packages . && \
+    uv pip install . && \
     cp /workspace/third_party/mlperf-inference/mlperf.conf /workspace/
