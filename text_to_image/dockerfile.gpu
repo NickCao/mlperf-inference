@@ -1,21 +1,11 @@
-ARG FROM_IMAGE_NAME=nvcr.io/nvidia/pytorch:23.08-py3
-FROM ${FROM_IMAGE_NAME}
+FROM quay.io/redhat-user-workloads/octo-edge-tenant/jetson-wheels-vllm-app:latest
 
-ENV DEBIAN_FRONTEND=noninteractive
+RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm && crb enable
+RUN dnf install -y https://mirror.stream.centos.org/9-stream/CRB/aarch64/os/Packages/ladspa-1.13-28.el9.aarch64.rpm
+RUN dnf install -y ffmpeg-free libSM libXext git-core
 
-# apt dependencies
-RUN apt-get update
-RUN apt-get install -y ffmpeg libsm6 libxext6
+RUN uv pip install --no-cache-dir "git+https://github.com/mlcommons/inference.git@2814499#subdirectory=loadgen"
 
 # install LDM
 COPY . /diffusion
-RUN cd /diffusion && \
-    pip install --no-cache-dir -r requirements.txt
-
-# install loadgen
-RUN cd /tmp && \
-    git clone --recursive https://github.com/mlcommons/inference && \
-    cd inference/loadgen && \
-    pip install pybind11 && \
-    CFLAGS="-std=c++14" python setup.py install && \
-    rm -rf mlperf
+RUN cd /diffusion && uv pip install --no-cache-dir -r requirements.txt
