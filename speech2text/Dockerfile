@@ -29,7 +29,7 @@ COPY ./ /workspace/
 
 RUN uv pip install pandas sox
 RUN bash -c "source /app/bin/activate && bash ./download_dataset.sh"
-RUN bash <(curl -s https://raw.githubusercontent.com/mlcommons/r2-downloader/refs/heads/main/mlc-r2-downloader.sh) -d whisper/model https://inference.mlcommons-storage.org/metadata/whisper-model.uri
+# RUN bash <(curl -s https://raw.githubusercontent.com/mlcommons/r2-downloader/refs/heads/main/mlc-r2-downloader.sh) -d whisper/model https://inference.mlcommons-storage.org/metadata/whisper-model.uri
 # bash <(curl -s https://raw.githubusercontent.com/mlcommons/r2-downloader/refs/heads/main/mlc-r2-downloader.sh) -d whisper/dataset https://inference.mlcommons-storage.org/metadata/whisper-dataset.uri
 # ./reference_mlperf_perf.sh
 # ./reference_mlperf_accuracy.sh
