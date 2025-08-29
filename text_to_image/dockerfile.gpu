@@ -4,7 +4,8 @@ RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.n
 RUN dnf install -y https://mirror.stream.centos.org/9-stream/CRB/aarch64/os/Packages/ladspa-1.13-28.el9.aarch64.rpm
 RUN dnf install -y ffmpeg-free libSM libXext git-core wget unzip
 
-RUN uv pip install --no-cache-dir "git+https://github.com/mlcommons/inference.git@2814499#subdirectory=loadgen"
+RUN uv pip install --no-cache-dir \
+  "git+https://github.com/mlcommons/inference.git@28144996310f5303a09355d55f238786737dc346#subdirectory=loadgen"
 RUN uv pip install --no-cache-dir mlc-scripts pandas
 
 ENV MODEL_PATH=/model
@@ -12,11 +13,11 @@ ENV MODEL_PATH=/model
 # install LDM
 COPY . /diffusion
 RUN cd /diffusion && \
-  uv pip freeze > /tmp/override.txt && \
+  uv pip show torch | grep Version | awk '{ printf "torch=="$2 }' > /tmp/override.txt && \
   uv pip install --no-cache-dir -r requirements.txt --override /tmp/override.txt
 
 # RUN /app/bin/mlcr get,ml-model,sdxl,_fp16,_rclone --outdirname=$MODEL_PATH
 # RUN /app/bin/mlcr get,ml-model,sdxl,_fp32,_rclone --outdirname=$MODEL_PATH
 # RUN cd /diffusion/tools && ./download-coco-2014.sh -n $(nproc)
 # RUN python3 main.py --dataset "coco-1024" --dataset-path coco2014 --profile stable-diffusion-xl-pytorch \
-    --model-path /model --dtype fp16 --device cuda --time 600 --scenario Offline
+#    --model-path /model --dtype fp16 --device cuda --time 600 --scenario Offline
